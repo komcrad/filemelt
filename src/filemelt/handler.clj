@@ -3,25 +3,16 @@
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.anti-forgery :refer [anti-forgery-field]]
-            [hiccup.core :refer [html]]
             [clojure.string :as string]
-            [clojure.java.io :as io]))
-
-(defn layout
-  [contenets]
-  (html [:html
-          [:head]
-          [:body
-           [:nav
-            [:a {:href "/"} "Home"]]
-           contenets]]))
+            [clojure.java.io :as io]
+            [filemelt.main-layout :refer :all]))
 
 (defn root-handler
   [request]
-  (layout [:form {:action "/upload" :method "post" :enctype "multipart/form-data"}
-           [:input {:type "file" :name "file"}]
-           [:button {:type "submit"} "Send!"]
-           (anti-forgery-field)]))
+  (layout [:form {:id "file-upload" :action "/upload" :method "post" :enctype "multipart/form-data"}
+             [:input {:type "file" :name "file"}]
+             [:button {:type "submit"} "Upload"]
+             (anti-forgery-field)]))
 
 (defn upload-handler
   [request]
@@ -31,7 +22,7 @@
       (io/copy (io/file file) (io/file (str "resources/public/downloads/" newfile)))
       (io/delete-file file)
       (future
-        (. Thread sleep 300000)
+        (. Thread sleep (* 1000 60 * 60 * 24))
         (io/delete-file (str "resources/public/downloads/" newfile)))
       (layout [:div [:h1 newfile]]))))
 
