@@ -5,7 +5,7 @@
   [contenets]
   (html [:html
           [:head
-		   (slurp "resources/public/favicon.html")
+		   (slurp (clojure.java.io/resource "public/favicon.html"))
            [:link {:rel "stylesheet" :type "text/css" :href "/styles/main.css"}]]
 		   [:script {:src "/js/dropzone.js"}]
           [:body
