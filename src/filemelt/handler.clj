@@ -27,6 +27,7 @@
   [request]
   (let [file (.getAbsolutePath (get-in request [:params :file :tempfile]))]
     (let [newfile (get-in request [:params :file :filename])]
+      (io/make-parents (str "resources/public/downloads/" newfile))
       (io/copy (io/file file) (io/file (str "resources/public/downloads/" newfile)))
       (io/delete-file file)
       (future
@@ -36,7 +37,8 @@
 
 (defn download-handler
   [request file-id]
-  (layout [:a {:href (str "/downloads/" file-id) :download file-id} file-id]))
+  {:headers {"Content-Disposition" "attachment" "filename" file-id}
+   :body (io/file (str "resources/public/downloads/" file-id))})
 
 (defroutes app-routes
   (GET "/" [] root-handler)
