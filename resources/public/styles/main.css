@@ -3,19 +3,6 @@ body {
 	font-family: arial;
 }
 
-#main {
-	display: grid;
-	grid-template-columns: 10vw 80vw 10vw;
-	grid-template-areas:
-	"... .... ..."
-	"... main ..."
-	"... .... ..."
-	"... .... ...";
-	color: #444;
-	margin: 0;
-}
-
-
 nav {
 	height: auto;
 }
@@ -34,18 +21,32 @@ nav a:hover {
 	transition: all .3s linear;
 }
 
-#file-upload {
-	text-align: center;
-	grid-area: main;
+form {
+	margin: 5px;
+	padding: 1em;
 }
-
-input {
-	font-size: 1.5em;
-}
-
 .box__dragndrop,
 .box__uploading,
 .box__success,
 .box__error {
   display: none;
+}
+
+.box.has-advanced-upload {
+  background-color: white;
+  outline: 2px dashed black;
+  outline-offset: -10px;
+}
+.box.has-advanced-upload .box__dragndrop {
+  display: inline;
+}
+.box.is-dragover {
+  background-color: grey;
+}
+
+.box.is-uploading .box__input {
+  visibility: none;
+}
+.box.is-uploading .box__uploading {
+  display: block;
 }

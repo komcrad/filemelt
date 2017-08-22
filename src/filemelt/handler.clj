@@ -2,20 +2,24 @@
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [ring.util.anti-forgery :refer [anti-forgery-field]]
             [clojure.string :as string]
             [clojure.java.io :as io]
-            [filemelt.main-layout :refer :all]))
-
-(defn root-handler
-  [request]
-  (layout [:form {:id "file-upload" :action "/upload" :method "post" :enctype "multipart/form-data"}
-             [:input {:type "file" :name "file"}]
-             [:button {:type "submit"} "Upload"]
-             (anti-forgery-field)]))
+            [filemelt.main-layout :refer :all]
+            [filemelt.index :refer :all]))
 
 (defn upload-handler
   [request]
+  (loop [files (first (get-in request [:params :files]))]
+    (when (< 0 (count files))
+      (println (first files))
+      ;(let [uploaded-file (:tempfile (first files)),
+      ;      file-name (:filename (first files))]
+      ;  (io/make-parents (str "resources/public/downloads/" file-name))
+      ;  (io/copy (io/file uploaded-file) (io/file (str "resources/public/downloads/" file-name)))
+      ;  (io/delete-file uploaded-file))
+      (recur (rest files)))))
+
+(defn do-nothing
   (let [file (.getAbsolutePath (get-in request [:params :file :tempfile]))]
     (let [newfile (get-in request [:params :file :filename])]
       (io/make-parents (str "resources/public/downloads/" newfile))
@@ -32,7 +36,7 @@
    :body (io/file (str "resources/public/downloads/" file-id))})
 
 (defroutes app-routes
-  (GET "/" [] root-handler)
+  (GET "/" [] index-handler)
   (POST "/upload" [] upload-handler)
   (GET "/:file-id" [file-id & request] (download-handler request file-id))
   (route/not-found "Not Found"))
